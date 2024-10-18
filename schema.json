@@ -1,0 +1,91 @@
+{
+    "machine_id": "welding_robot_006",
+    "weld_temperature": 1600,
+    "weld_current": 150,
+    "weld_voltage": 30,
+    "weld_time": 500,
+    "pressure_applied": 1000,
+    "arm_position": {"x": 120.5, "y": 80.4, "z": 200.3},
+    "wire_feed_rate": 5,
+    "gas_flow_rate": 20,
+    "weld_strength_estimate": 2000,
+    "vibration_level": 0.2,
+    "power_consumption": 3.5,
+    "timestamp": "2024-10-14T11:00:00Z"
+}
+
+{
+    "machine_id": "stamping_press_001",
+    "force_applied": 500,
+    "cycle_time": 12,
+    "temperature": 75,
+    "vibration_level": 0.8,
+    "cycle_count": 1500,
+    "oil_pressure": 3.5,
+    "die_alignment": "aligned",
+    "sheet_thickness": 1.2,
+    "power_consumption": 12.5,
+    "noise_level": 85,
+    "lubrication_flow_rate": 0.6,
+    "timestamp": "2024-10-14T10:30:00Z"
+}
+
+{
+    "machine_id": "painting_robot_002",
+    "spray_pressure": 3.5,
+    "paint_thickness": 120,
+    "arm_position": {"x": 120.5, "y": 80.4, "z": 200.3},
+    "temperature": 25,
+    "humidity": 60,
+    "paint_flow_rate": 4.2,
+    "paint_volume_used": 0.8,
+    "atomizer_speed": 20000,
+    "overspray_capture_efficiency": 95,
+    "booth_airflow_velocity": 0.5,
+    "solvent_concentration": 5.2,
+    "timestamp": "2024-10-14T10:35:00Z"
+}
+
+{
+    "machine_id": "agv_003",
+    "location": {"x": 150.5, "y": 90.3, "z": 0},
+    "battery_level": 85,
+    "load_weight": 500,
+    "speed": 1.2,
+    "distance_traveled": 1200,
+    "obstacle_detection": "no",
+    "navigation_status": "en_route",
+    "vibration_level": 0.4,
+    "temperature": 35,
+    "wheel_rotation_speed": 400,
+    "timestamp": "2024-10-14T10:40:00Z"
+}
+
+{
+    "machine_id": "cnc_milling_004",
+    "spindle_speed": 12000,
+    "tool_wear_level": 35,
+    "cut_depth": 5,
+    "feed_rate": 300,
+    "vibration_level": 1.1,
+    "coolant_flow_rate": 0.8,
+    "material_hardness": 210,
+    "power_consumption": 10.5,
+    "temperature": 55,
+    "chip_load": 0.3,
+    "timestamp": "2024-10-14T10:45:00Z"
+}
+
+{
+    "machine_id": "leak_test_005",
+    "test_pressure": 5.0,
+    "pressure_drop": 0.02,
+    "leak_rate": 0.0,
+    "test_duration": 45,
+    "temperature": 25,
+    "status": "pass",
+    "fluid_type": "air",
+    "seal_condition": "good",
+    "test_cycle_count": 1500,
+    "timestamp": "2024-10-14T10:50:00Z"
+}
