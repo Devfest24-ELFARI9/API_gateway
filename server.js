@@ -1,5 +1,5 @@
-// server.js
 const WebSocket = require('ws');
+const { validateSession } = require('./validate'); // Import the session validation function
 
 // Create a WebSocket server on port 8080
 const wss = new WebSocket.Server({ port: 8080 });
@@ -8,15 +8,15 @@ const wss = new WebSocket.Server({ port: 8080 });
 const channels = {};
 
 // Function to broadcast message to all clients in a specific channel
-function broadcastToChannel(channel, message) {
-    console.log(`Broadcasting message to channel: ${channel}, message: ${message}`);
+function broadcastToChannel(channel, message, role) {
+    console.log(`Broadcasting message to channel: ${channel}, message: ${message}, role: ${role}`);
     if (channels[channel]) {
         channels[channel].forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
+            if (client.readyState === WebSocket.OPEN && (!role || client.role === role)) {
                 client.send(JSON.stringify({ channel, message }));
-                console.log(`Message sent to client in channel ${channel}`);
+                console.log(`Message sent to client in channel ${channel} with role ${role}`);
             } else {
-                console.log(`Client in channel ${channel} is not ready`);
+                console.log(`Client in channel ${channel} is not ready or does not have the role ${role}`);
             }
         });
     } else {
@@ -24,15 +24,35 @@ function broadcastToChannel(channel, message) {
     }
 }
 
-wss.on('connection', (ws) => {
+wss.on('connection', async (ws, req) => {
     console.log('New client connected');
     let currentChannel = null;
 
-    ws.on('message', (data) => {
-        const parsedData = JSON.parse(data) ;
-        const { action, channel, message } = parsedData ;
+    // Extract session ID or special identifier from query parameters
+    const urlParams = new URLSearchParams(req.url.split('?')[1]);
+    const sessionId = urlParams.get('sessionId');
+    const specialIdentifier = urlParams.get('specialIdentifier');
 
-        console.log(`Received action: ${action}, channel: ${channel}, message: ${message}`);
+    // Validate the session if no special identifier is provided
+    if (!specialIdentifier) {
+        const { session, user } = await validateSession(sessionId);
+        if (!session) {
+            ws.send(JSON.stringify({ error: 'Authentication failed' }));
+            ws.close();
+            return;
+        }
+        // Store the user's role in the WebSocket connection
+        ws.role = user.role;
+    } else {
+        // Allow connection for the special identifier without session validation
+        ws.role = 'data_wrapper_client';
+    }
+
+    ws.on('message', (data) => {
+        const parsedData = JSON.parse(data);
+        const { action, channel, message, role } = parsedData;
+
+        console.log(`Received action: ${action}, channel: ${channel}, message: ${message}, role: ${role}`);
 
         switch (action) {
             case 'subscribe':
@@ -58,10 +78,9 @@ wss.on('connection', (ws) => {
                 break;
 
             case 'send-message':
-                // Broadcast message to the current channel
-                    console.log(`Sending message to channel ${channel}: ${message}`);
-                    broadcastToChannel(channel, message);
-                
+                // Broadcast message to the current channel with role filtering
+                console.log(`Sending message to channel ${channel}: ${message} for role ${role}`);
+                broadcastToChannel(channel, message, role);
                 break;
 
             default:

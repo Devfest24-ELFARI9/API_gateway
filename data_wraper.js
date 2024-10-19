@@ -2,10 +2,12 @@ const express = require('express');
 const WebSocket = require('ws');
 const { consumeMessages } = require('./Broker_Connector');
 
-// Create WebSocket client
-const ws = new WebSocket('ws://localhost:8080');  // WebSocket client connecting to a server
+// Create WebSocket client with a special identifier
+const specialIdentifier = 'data_wrapper_client';
+const ws = new WebSocket(`ws://localhost:8080?specialIdentifier=${specialIdentifier}`);  // WebSocket client connecting to a server
 const domain1 = 'sensor-data';
-const domain2 = 'power_consumption';  // Updated domain name
+const domain2 = 'power_consumption';
+const alertQueue = 'alert-queue';  // New domain for alert-queue
 
 // Store a flag to track if WebSocket is ready to send messages
 let isWsOpen = false;
@@ -15,9 +17,10 @@ ws.onopen = () => {
     console.log('Connected to WebSocket server');
     isWsOpen = true;
 
-    // Subscribe to both sensor-data and power-consumption channels after connection
+    // Subscribe to sensor-data, power-consumption, and alert-queue channels after connection
     ws.send(JSON.stringify({ action: 'subscribe', channel: domain1 }));
     ws.send(JSON.stringify({ action: 'subscribe', channel: domain2 }));
+    ws.send(JSON.stringify({ action: 'subscribe', channel: alertQueue }));  // Subscribe to alert-queue
 };
 
 ws.onmessage = (message) => {
@@ -30,13 +33,15 @@ ws.onerror = (error) => {
 
 ws.onclose = () => {
     console.log('WebSocket connection closed');
+    isWsOpen = false; // Update the flag when the connection is closed
 };
 
 // Function to process and send data to WebSocket
 const processSensorData = async (queue, data) => {
     if (isWsOpen) {
         // Send data to the WebSocket server for the specific channel (queue)
-        ws.send(JSON.stringify({ action: 'send-message', channel: queue, message: data }));
+        const message = JSON.stringify({ action: 'send-message', channel: queue, message: data });
+        ws.send(message);
         console.log(`Sent data to channel ${queue}:`, data);
     } else {
         console.log('WebSocket is not open, cannot send data');
@@ -44,6 +49,7 @@ const processSensorData = async (queue, data) => {
     return data;  // Return the processed data
 };
 
-// Consume messages and process them using processSensorData for both domains
+// Consume messages and process them using processSensorData for all domains
 consumeMessages(domain1, processSensorData);
 consumeMessages(domain2, processSensorData);
+consumeMessages(alertQueue, processSensorData);  // Consume messages from alert-queue
