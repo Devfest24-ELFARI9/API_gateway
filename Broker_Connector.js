@@ -24,7 +24,7 @@ const consumeMessages = async (queue, callback,ws) => {
             const data = JSON.parse(messageContent);
 
             // Process the message using the provided callback function
-            const dataProcessed = await callback(data,ws);
+            const dataProcessed = await callback(queue,data,ws);
 
             // Acknowledge that the message has been processed
             channel.ack(msg);
