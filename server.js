@@ -1,5 +1,7 @@
 const WebSocket = require('ws');
+const express = require('express');
 const { validateSession } = require('./validate'); // Import the session validation function
+const alertRoute = require('./src/routes/alertRoute'); // Import the alert route
 
 // Create a WebSocket server on port 8080
 const wss = new WebSocket.Server({ port: 8080 });
@@ -99,3 +101,17 @@ wss.on('connection', async (ws, req) => {
 });
 
 console.log('WebSocket server is running on ws://localhost:8080');
+
+// Express server setup for alert service routes
+const app = express();
+const port = process.env.PORT || 3000;
+
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+// Use the alert route
+app.use('/alerts', alertRoute);
+
+app.listen(port, () => {
+    console.log(`API Gateway is running on http://localhost:${port}`);
+});
