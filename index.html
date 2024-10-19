@@ -1,56 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Real-Time Dashboard</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 50px;
-    }
-    #data {
-      font-size: 2em;
-      color: #3498db;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 1em;
-      margin-top: 20px;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
 </head>
 <body>
-  <h1>Real-Time Dashboard</h1>
-  <p>Real-time data value: <span id="data">--</span></p>
-  
-  <!-- Button to close the WebSocket connection -->
-  <button id="closeBtn">Close Connection</button>
+    <input type="text" id="channel" placeholder="Enter Channel">
+    <input type="text" id="message" placeholder="Enter Message">
+    <button id="subscribe">Subscribe</button>
+    <button id="unsubscribe">Unsubscribe</button>
+    <button id="send">Send Message</button>
+    <div id="messages"></div>
 
-  <script>
-    // Create a WebSocket connection to the server
-    const socket = new WebSocket('ws://localhost:3005');
+    <script>
+        const ws = new WebSocket('ws://localhost:8080');
+        const messagesContainer = document.getElementById('messages');
 
-    // Listen for messages from the server
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      // Assuming the server sends an array of numbers
-      document.getElementById('data').textContent =  JSON.stringify(data, null, 2);
-      console.log(JSON.stringify(data, null, 2));
-    };
+        ws.onopen = () => {
+            console.log('Connected to WebSocket server');
+        };
 
-    // Handle connection close
-    socket.onclose = () => {
-      document.getElementById('data').textContent = 'Connection closed';
-    };
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            const messageElement = document.createElement('div');
+            messageElement.textContent = `Channel: ${ JSON.stringify(data.channel, null, 2)}, Message: ${ JSON.stringify(data.message, null, 2)}`;
+            messagesContainer.appendChild(messageElement);
+        };
 
-    // Button click event to close the WebSocket connection
-    document.getElementById('closeBtn').addEventListener('click', () => {
-      socket.close(); // Close the WebSocket connection
-      console.log('WebSocket connection closed');
-    });
-  </script>
+        document.getElementById('subscribe').onclick = () => {
+            const channel = document.getElementById('channel').value;
+            ws.send(JSON.stringify({ action: 'subscribe', channel }));
+        };
+
+        document.getElementById('unsubscribe').onclick = () => {
+            ws.send(JSON.stringify({ action: 'unsubscribe' }));
+        };
+
+        document.getElementById('send').onclick = () => {
+            const message = document.getElementById('message').value;
+            ws.send(JSON.stringify({ action: 'send-message', message }));
+        };
+    </script>
 </body>
 </html>
