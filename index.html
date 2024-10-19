@@ -31,14 +31,14 @@
 
   <script>
     // Create a WebSocket connection to the server
-    const socket = new WebSocket('ws://localhost:3000');
+    const socket = new WebSocket('ws://localhost:3005');
 
     // Listen for messages from the server
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       // Assuming the server sends an array of numbers
       document.getElementById('data').textContent =  JSON.stringify(data, null, 2);
-      console.log(JSON.stringify(jsonObject, null, 2));
+      console.log(JSON.stringify(data, null, 2));
     };
 
     // Handle connection close

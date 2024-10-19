@@ -1,9 +1,10 @@
 const express = require('express');
 const WebSocket = require('ws');
+const { consumeMessages } = require('./Broker_Connector');
 
 // Create a simple Express server
 const app = express();
-const port = 3000;
+const port = 3005;
 
 // Serve the static HTML file for the dashboard
 app.use(express.static('public'));
@@ -19,29 +20,42 @@ const wss = new WebSocket.Server({ server });
 // Handle WebSocket connections
 wss.on('connection', (ws) => {
 console.log('New client connected');
-  
-// Send real-time data updates to the client
-// create a continous way of doing this maybe by while(true) and always check message brocker for new dsta to send
 
-const interval = setInterval(() => {
-    // Simulate fetching new data (you can replace this with actual data fetching logic)
 
-    const data = randomize_data();
-    console.log(data);
-    // Send data to the client
-    ws.send(JSON.stringify(data));
-  }, 1000);
+    const queue = 'sensor-data';
+    const toprint = consumeMessages(queue,processSensorData,wss);
+
+
+
+ws.on('message',(message)=>{
+    
+    console.log('Message')
+    
+    
+    });
+    
+    
+    // Handle client disconnectz
+    wss.on('close', () => {
+        console.log('Client disconnected');
+        clearInterval(interval);
+        });
+
 
 
 });
 
-
-// Handle client disconnectz
-wss.on('close', () => {
-    console.log('Client disconnected');
-    clearInterval(interval);
-    });
-
+const processSensorData = async (data,wss) => {
+    // Here you can process the data, e.g., saving it to a database, analyzing, etc.
+    // we send the data consumed for all connected devices to the websocket, so all clients can receive the data after it is consumed by the server
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify(data, null, 2));
+          console.log(JSON.stringify(data, null, 2))
+        }
+      });
+    return data; // Return the processed data
+  };
 
 const fetch_data = () => {
 
@@ -49,7 +63,8 @@ const fetch_data = () => {
 
 }
 
-const fetch_data_from  = (id) => {
+const fetch_data_from_broker  = (id) => {
+
 
 
 
