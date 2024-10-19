@@ -28,7 +28,7 @@ const consumeMessages = async (queue, callback,ws) => {
 
             // Acknowledge that the message has been processed
             channel.ack(msg);
-            console.log('Message acknowledged and processed:', dataProcessed);
+            //console.log('Message acknowledged and processed:', dataProcessed);
 
             // Resolve the promise with the processed data
             resolve(dataProcessed);

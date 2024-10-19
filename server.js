@@ -29,18 +29,18 @@ console.log('New client connected');
 
 ws.on('message',(message)=>{
     
-    console.log('Message')
+    console.log(message)
     
     
     });
     
+
     
     // Handle client disconnectz
     wss.on('close', () => {
         console.log('Client disconnected');
         clearInterval(interval);
         });
-
 
 
 });
@@ -50,8 +50,9 @@ const processSensorData = async (data,wss) => {
     // we send the data consumed for all connected devices to the websocket, so all clients can receive the data after it is consumed by the server
     wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
+          data = { 'channel':data['machine_id'] , 'data':data }
           client.send(JSON.stringify(data, null, 2));
-          console.log(JSON.stringify(data, null, 2))
+          console.log(JSON.stringify(data, null, 2));
         }
       });
     return data; // Return the processed data
