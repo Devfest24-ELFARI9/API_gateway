@@ -1,10 +1,9 @@
-import { Request, Response } from 'express';
 import axios from 'axios';
 
 // Base URL of the alert service
 const alertServiceBaseUrl = process.env.ALERT_SERVICE_BASE_URL || 'http://localhost:3001';
 
-export const getNotifications = async (req: Request, res: Response) => {
+export const getNotifications = async (req, res) => {
     const { team } = req.params;
     try {
         const response = await axios.get(`${alertServiceBaseUrl}/getNotification/${team}`);
@@ -15,7 +14,7 @@ export const getNotifications = async (req: Request, res: Response) => {
     }
 };
 
-export const resolveNotificationById = async (req: Request, res: Response) => {
+export const resolveNotificationById = async (req, res) => {
     const { id } = req.params;
     try {
         const response = await axios.post(`${alertServiceBaseUrl}/resolveNotification/${id}`);

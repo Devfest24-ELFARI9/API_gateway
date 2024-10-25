@@ -1,7 +1,6 @@
-import { lucia } from "./auth";
+import { lucia } from "./auth.js";
 
-export const validateSession = async (sessionId?: string) => {
-    
+export const validateSession = async (sessionId) => {
     if (!sessionId) {
         return { session: null, user: null };
     }
@@ -10,8 +9,7 @@ export const validateSession = async (sessionId?: string) => {
     return { session, user };
 }
 
-
-export const isAllowed = async (sessionId?: string, role?: string) => {
+export const isAllowed = async (sessionId, role) => {
     const { user } = await validateSession(sessionId);
     if (!user) {
         return false;
@@ -21,3 +19,4 @@ export const isAllowed = async (sessionId?: string, role?: string) => {
     }
     return true;
 }
+

@@ -1,10 +1,9 @@
-const express = require('express');
-const WebSocket = require('ws');
-const { consumeMessages } = require('./Broker_Connector');
+import express from 'express';
+import WebSocket from 'ws';
+import { consumeMessages } from './Broker_Connector.js';
 
 // Create WebSocket client with a special identifier
-const specialIdentifier = 'data_wrapper_client';
-const ws = new WebSocket(`ws://localhost:8080?specialIdentifier=${specialIdentifier}`);  // WebSocket client connecting to a server
+const ws = new WebSocket(`ws://localhost:8080`);  // WebSocket client connecting to a server
 const domain1 = 'sensor-data';
 const domain2 = 'power_consumption';
 const alertQueue = 'alert-queue';  // New domain for alert-queue

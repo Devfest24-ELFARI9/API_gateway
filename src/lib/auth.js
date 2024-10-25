@@ -1,8 +1,9 @@
-import { Lucia } from "lucia";
+import {lucia} from "lucia";
 import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
-import { db } from "./prisma.ts";
+import { db } from "./prisma.js";
 
-export const lucia = new Lucia(new PrismaAdapter(db.session, db.user), {
+const luciaInstance = lucia({
+  adapter: new PrismaAdapter(db.session, db.user),
   getSessionAttributes: async (att) => {
     return {
       id: att?.id,
@@ -18,16 +19,11 @@ export const lucia = new Lucia(new PrismaAdapter(db.session, db.user), {
       email: attributes.email,
     };
   },
+  DatabaseUserAttributes: {
+    id: "string",
+    email: "string",
+    role: "string",
+  },
 });
 
-// IMPORTANT!
-declare module "lucia" {
-  interface Register {
-    Lucia: typeof lucia;
-    DatabaseUserAttributes: {
-      id: string;
-      email: string;
-      role: string;
-    };
-  }
-}
+export default luciaInstance;

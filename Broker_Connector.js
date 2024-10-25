@@ -1,8 +1,10 @@
-require('dotenv').config();
-const amqp = require('amqplib');
+import dotenv from 'dotenv';
+import amqp from 'amqplib';
+
+dotenv.config();
 
 // Utility function to consume a message from the queue and return the result
-const consumeMessages = async (queue, callback,ws) => {
+export const consumeMessages = async (queue, callback,ws) => {
   try {
     // Connect to RabbitMQ server using the URL from the .env file
     const connection = await amqp.connect(process.env.RABBITMQ_URL);
@@ -21,6 +23,8 @@ const consumeMessages = async (queue, callback,ws) => {
           try {
             // Convert the message content to a string and parse as JSON
             const messageContent = msg.content.toString();
+            console.log("message got from rabbitMQ :",msg)
+            console.log("message content : ",messageContent);
             const data = JSON.parse(messageContent);
 
             // Process the message using the provided callback function
@@ -50,4 +54,3 @@ const consumeMessages = async (queue, callback,ws) => {
 // Example usage of the consumeMessages function
 
 
-module.exports = { consumeMessages };

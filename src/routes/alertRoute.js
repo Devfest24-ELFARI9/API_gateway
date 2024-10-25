@@ -1,5 +1,5 @@
 import express from 'express';
-import { getNotifications, resolveNotificationById } from '../controllers/alertController';
+import { getNotifications, resolveNotificationById } from '../controllers/alertController.js';
 
 const router = express.Router();
 
