@@ -7,6 +7,8 @@ const ws = new WebSocket(`ws://localhost:8080`);  // WebSocket client connecting
 const domain1 = 'sensor-data';
 const domain2 = 'power_consumption';
 const alertQueue = 'alert-queue';  // New domain for alert-queue
+const KpiQueue = 'kpi_queue';
+
 
 // Store a flag to track if WebSocket is ready to send messages
 let isWsOpen = false;
@@ -19,7 +21,8 @@ ws.onopen = () => {
     // Subscribe to sensor-data, power-consumption, and alert-queue channels after connection
     ws.send(JSON.stringify({ action: 'subscribe', channel: domain1 }));
     ws.send(JSON.stringify({ action: 'subscribe', channel: domain2 }));
-    ws.send(JSON.stringify({ action: 'subscribe', channel: alertQueue }));  // Subscribe to alert-queue
+    ws.send(JSON.stringify({ action: 'subscribe', channel: alertQueue })); 
+    ws.send(JSON.stringify({ action: 'subscribe', channel: KpiQueue })); 
 };
 
 ws.onmessage = (message) => {
@@ -52,3 +55,4 @@ const processSensorData = async (queue, data) => {
 consumeMessages(domain1, processSensorData);
 consumeMessages(domain2, processSensorData);
 consumeMessages(alertQueue, processSensorData);  // Consume messages from alert-queue
+consumeMessages(KpiQueue,processSensorData);
