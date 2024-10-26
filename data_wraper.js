@@ -8,6 +8,8 @@ const domain1 = 'sensor-data';
 const domain2 = 'power_consumption';
 const alertQueue = 'alert-queue';  // New domain for alert-queue
 const KpiQueue = 'kpi_queue';
+const AlertsNotifications = "kpi-alert-notification-queue";
+const TaskQueue ="task_queue";
 
 
 // Store a flag to track if WebSocket is ready to send messages
@@ -23,6 +25,9 @@ ws.onopen = () => {
     ws.send(JSON.stringify({ action: 'subscribe', channel: domain2 }));
     ws.send(JSON.stringify({ action: 'subscribe', channel: alertQueue })); 
     ws.send(JSON.stringify({ action: 'subscribe', channel: KpiQueue })); 
+    ws.send(JSON.stringify({ action: 'subscribe', channel: AlertsNotifications })); 
+    ws.send(JSON.stringify({ action: 'subscribe', channel: TaskQueue })); 
+
 };
 
 ws.onmessage = (message) => {
@@ -54,5 +59,7 @@ const processSensorData = async (queue, data) => {
 // Consume messages and process them using processSensorData for all domains
 consumeMessages(domain1, processSensorData);
 consumeMessages(domain2, processSensorData);
-consumeMessages(alertQueue, processSensorData);  // Consume messages from alert-queue
+consumeMessages(alertQueue, processSensorData);  
 consumeMessages(KpiQueue,processSensorData);
+consumeMessages(AlertsNotifications,processSensorData);
+consumeMessages(TaskQueue,processSensorData);
